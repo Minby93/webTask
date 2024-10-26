@@ -34,21 +34,19 @@ public class CustomEncoderConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 // Установили страницу авторизации и выдали на ее получение для всех
-                .formLogin((form) -> form
-                        .loginPage("/login")
-                        .permitAll()
-                        .defaultSuccessUrl("/profile") // Стандартный адресс перенаправления после успешной авторизации
-                )
-
                 .logout(LogoutConfigurer::permitAll) // Доступ для всех для выхода из аккаунта
                 // Настройка доступа
                 .authorizeHttpRequests((requests) -> requests
-                        // Выдали всем жоступ к этим страницам
-                        .requestMatchers("*")
-                        .permitAll()
                         // Страницу авторизации сделали доступной только для неавторизованных пользователей
                         .requestMatchers("/user/register").anonymous()
-                        //.anyRequest().authenticated()
+                        .requestMatchers("/error/*").permitAll()
+                        .anyRequest().authenticated()
+
+                )
+                .formLogin((form) -> form
+                        .loginPage("/login")
+                        .permitAll()
+                        .defaultSuccessUrl("/")
                 );
 
 

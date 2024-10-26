@@ -6,9 +6,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 public class CustomEncoder implements PasswordEncoder {
-    @Value("${key}")
-    String key;
 
+    @Autowired
     private final EncryptService encryptService;
 
     @Autowired
@@ -18,12 +17,13 @@ public class CustomEncoder implements PasswordEncoder {
 
     @Override
     public String encode(CharSequence rawPassword) {
-        return encryptService.encryptMessage(rawPassword.toString(), key);
+        return encryptService.encryptMessage(rawPassword.toString());
     }
 
     @Override
     public boolean matches(CharSequence rawPassword, String encodedPassword) {
-        String decryptedPassword = encryptService.decodeMessage(encodedPassword, key);
-        return decryptedPassword.equals(rawPassword.toString());
+        String decryptedPassword = encryptService.decodeMessage(encodedPassword);
+        System.out.println(decryptedPassword + " " + rawPassword);
+        return decryptedPassword.equals(rawPassword.toString().toUpperCase());
     }
 }

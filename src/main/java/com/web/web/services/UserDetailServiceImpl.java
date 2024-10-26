@@ -14,9 +14,8 @@ import java.util.Collections;
 import java.util.Optional;
 @Service
 public class UserDetailServiceImpl implements UserDetailsService {
-
+    @Autowired
     private UserRepository userRepository;
-    private CustomEncoder customPasswordEncoder;
 
 
     @Override

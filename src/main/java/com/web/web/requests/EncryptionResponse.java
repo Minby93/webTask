@@ -9,9 +9,9 @@ public class EncryptionResponse {
     @Override
     public String toString() {
         return "EncryptionResponse{" +
-                "encryptedMessage='" + encryptedMessage + '\'' +
+                "message='" + message + '\'' +
                 '}';
     }
 
-    private String encryptedMessage;
+    private String message;
 }

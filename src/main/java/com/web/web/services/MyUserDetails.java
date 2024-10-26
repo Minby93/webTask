@@ -18,7 +18,12 @@ public class MyUserDetails implements UserDetails {
     }
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of();
+        return List.of(new GrantedAuthority() {
+            @Override
+            public String getAuthority() {
+                return "User";
+            }
+        });
     }
 
     @Override
