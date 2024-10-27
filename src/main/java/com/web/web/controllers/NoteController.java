@@ -46,7 +46,23 @@ public class NoteController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Note you want to update was not found");
         }
         catch (Exception e){
-            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred");
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteNote(@PathVariable("id") int id){
+        try{
+            noteService.deleteNote(id);
+            return ResponseEntity.status(HttpStatus.OK).body("Note has been deleted");
+        }
+        catch (AccessDeniedException e){
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Forbidden");
+        }
+        catch (ClassNotFoundException e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Note you want to update was not found");
+        }
+        catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred");
         }
     }

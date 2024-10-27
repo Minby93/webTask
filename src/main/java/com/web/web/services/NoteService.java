@@ -76,6 +76,32 @@ public class NoteService {
         else throw new AccessDeniedException("Forbidden");
     }
 
+    public void deleteNote(int id) throws ClassNotFoundException, AccessDeniedException {
+        Optional<Note> noteOpt = noteRepository.findById(id);
+
+        if(noteOpt.isEmpty()){
+            throw new ClassNotFoundException("Note you want to delete was not found");
+        }
+
+        Note note = noteOpt.get();
+
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username;
+        if (principal instanceof MyUserDetails) {
+            username = ((MyUserDetails)principal).getUsername();
+        } else {
+            username = principal.toString();
+        }
+
+        Optional<User> user = userRepository.findByUsername(username);
+
+        if(user.isPresent() && (user.get().getId() == note.getUser().getId())){
+            note.setData(customEncoder.encode(note.getData()));
+            noteRepository.delete(note);
+        }
+        else throw new AccessDeniedException("Forbidden");
+    }
+
     public NoteDTO findNoteById(int id) throws ClassNotFoundException, AccessDeniedException {
         Optional<Note> noteOpt = this.noteRepository.findById(id);
 
@@ -101,4 +127,6 @@ public class NoteService {
         else throw new AccessDeniedException("Forbidden");
 
     }
+
+
 }
