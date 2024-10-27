@@ -49,6 +49,33 @@ public class NoteService {
         this.noteRepository.save(newNote);
     }
 
+    public void updateNote(Note note) throws ClassNotFoundException, AccessDeniedException {
+
+        Optional<Note> noteOpt = noteRepository.findById(note.getId());
+
+        if(noteOpt.isEmpty()){
+            throw new ClassNotFoundException("Note you want to update was not found");
+        }
+
+        Note newNote = noteOpt.get();
+
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username;
+        if (principal instanceof MyUserDetails) {
+            username = ((MyUserDetails)principal).getUsername();
+        } else {
+            username = principal.toString();
+        }
+
+        Optional<User> user = userRepository.findByUsername(username);
+
+        if(user.isPresent() && (user.get().getId() == newNote.getUser().getId())){
+            newNote.setData(customEncoder.encode(note.getData()));
+            noteRepository.save(newNote);
+        }
+        else throw new AccessDeniedException("Forbidden");
+    }
+
     public NoteDTO findNoteById(int id) throws ClassNotFoundException, AccessDeniedException {
         Optional<Note> noteOpt = this.noteRepository.findById(id);
 

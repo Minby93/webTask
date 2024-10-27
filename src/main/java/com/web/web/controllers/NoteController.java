@@ -32,6 +32,27 @@ public class NoteController {
         }
     }
 
+    @PutMapping
+    public ResponseEntity<String> updateNote(@RequestBody Note note){
+        try{
+            System.out.println(note);
+            noteService.updateNote(note);
+            return ResponseEntity.status(HttpStatus.OK).body("Note has been updated");
+        }
+        catch (AccessDeniedException e){
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Forbidden");
+        }
+        catch (ClassNotFoundException e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Note you want to update was not found");
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred");
+        }
+    }
+
+
+
     @GetMapping("/{id}")
     public ResponseEntity<?> getNote(@PathVariable("id") int id){
         try {
