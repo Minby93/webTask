@@ -27,6 +27,9 @@ public class NoteController {
             this.noteService.addNote(note);
             return ResponseEntity.status(200).body("Note added successfully");
         }
+        catch (AccessDeniedException e){
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Forbidden");
+        }
         catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred");
         }

@@ -23,7 +23,6 @@ public class CustomEncoder implements PasswordEncoder {
     @Override
     public boolean matches(CharSequence rawPassword, String encodedPassword) {
         String decryptedPassword = encryptService.decodeMessage(encodedPassword);
-        System.out.println(decryptedPassword + " " + rawPassword);
         return decryptedPassword.equals(rawPassword.toString().toUpperCase());
     }
 }
