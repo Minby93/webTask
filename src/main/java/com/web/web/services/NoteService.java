@@ -11,6 +11,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.nio.file.AccessDeniedException;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -129,4 +130,30 @@ public class NoteService {
     }
 
 
+    public List<NoteDTO> findAllNotesForCurrentUser() throws AccessDeniedException {
+
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username;
+        if (principal instanceof MyUserDetails) {
+            username = ((MyUserDetails)principal).getUsername();
+        } else {
+            username = principal.toString();
+        }
+
+        Optional<User> user =  this.userRepository.findByUsername(username);
+
+        System.out.println(user);
+
+        if(user.isEmpty()){
+            throw new AccessDeniedException("Forbidden");
+        }
+
+        List<Note> notes = user.get().getNotes();
+
+        for (Note note : notes){
+            note.setData(encryptService.decodeMessage(note.getData()));
+        }
+
+        return notes.stream().map(NoteDTO::new).toList();
+    }
 }

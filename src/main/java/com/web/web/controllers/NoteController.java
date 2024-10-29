@@ -87,4 +87,17 @@ public class NoteController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred");
         }
     }
+
+    @GetMapping
+    public ResponseEntity<?> getNotes(){
+        try {
+            return ResponseEntity.status(200).body(this.noteService.findAllNotesForCurrentUser());
+        }
+        catch (AccessDeniedException e){
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access denied");
+        }
+        catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred");
+        }
+    }
 }

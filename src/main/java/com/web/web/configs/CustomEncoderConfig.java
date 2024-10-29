@@ -3,7 +3,6 @@ package com.web.web.configs;
 import com.web.web.security.CustomEncoder;
 import com.web.web.services.EncryptService;
 import com.web.web.services.UserDetailServiceImpl;
-import com.web.web.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,19 +12,22 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.LogoutConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+
+import java.util.List;
 
 
 @Configuration
 @EnableWebSecurity
 public class CustomEncoderConfig {
 
-    private UserDetailServiceImpl userService;
+    private UserDetailServiceImpl userDetailService;
     private EncryptService encryptService;
 
 
     @Autowired
     public CustomEncoderConfig(UserDetailServiceImpl userService, EncryptService encryptService){
-        this.userService = userService;
+        this.userDetailService = userService;
         this.encryptService = encryptService;
     }
 
@@ -33,20 +35,28 @@ public class CustomEncoderConfig {
     public SecurityFilterChain configure(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
+                .cors(cors -> cors.configurationSource(request -> {
+                    var corsConfiguration = new CorsConfiguration();
+                    corsConfiguration.setAllowedOriginPatterns(List.of("*"));
+                    corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
+                    corsConfiguration.setAllowedHeaders(List.of("*"));
+                    corsConfiguration.setAllowCredentials(true);
+                    return corsConfiguration;
+                }))
                 // Установили страницу авторизации и выдали на ее получение для всех
                 .logout(LogoutConfigurer::permitAll) // Доступ для всех для выхода из аккаунта
                 // Настройка доступа
                 .authorizeHttpRequests((requests) -> requests
                         // Страницу авторизации сделали доступной только для неавторизованных пользователей
-                        .requestMatchers("/user/register").anonymous()
-                        .requestMatchers("/error/*").permitAll()
-                        .anyRequest().authenticated()
+                        //.requestMatchers("/register**", "/login").anonymous()
+                        //.requestMatchers("/error/*").permitAll()
+                        .anyRequest().permitAll()
 
                 )
                 .formLogin((form) -> form
                         .loginPage("/login")
                         .permitAll()
-                        .defaultSuccessUrl("/")
+                        .defaultSuccessUrl("http://127.0.0.1:3000/")
                 );
 
 
@@ -61,7 +71,7 @@ public class CustomEncoderConfig {
     public DaoAuthenticationProvider daoAuthenticationProvider(){
         DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
         daoAuthenticationProvider.setPasswordEncoder(customEncoder());
-        daoAuthenticationProvider.setUserDetailsService(userService);
+        daoAuthenticationProvider.setUserDetailsService(userDetailService);
         return daoAuthenticationProvider;
     }
 
@@ -69,4 +79,7 @@ public class CustomEncoderConfig {
     public CustomEncoder customEncoder(){
         return new CustomEncoder(encryptService);
     }
+
+
+
 }
