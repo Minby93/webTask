@@ -6,10 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 @Entity
 @Table(name = "note")
@@ -23,7 +19,7 @@ public class Note {
     @Column(name = "id")
     private int id;
 
-    @Column(name = "data")
+    @Column(name = "data", columnDefinition = "TEXT")
     private String data;
 
     @ManyToOne
