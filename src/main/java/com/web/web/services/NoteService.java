@@ -140,9 +140,8 @@ public class NoteService {
             username = principal.toString();
         }
 
-        Optional<User> user =  this.userRepository.findByUsername(username);
+        Optional<User> user = this.userRepository.findByUsername(username);
 
-        System.out.println(user);
 
         if(user.isEmpty()){
             throw new AccessDeniedException("Forbidden");
