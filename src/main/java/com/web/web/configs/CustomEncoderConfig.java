@@ -5,6 +5,7 @@ import com.web.web.services.EncryptService;
 import com.web.web.services.UserDetailServiceImpl;
 import jakarta.servlet.http.Cookie;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -33,6 +34,9 @@ public class CustomEncoderConfig {
         this.encryptService = encryptService;
     }
 
+    @Value("${front.url}")
+    String frontUrl;
+
     @Bean
     public SecurityFilterChain configure(HttpSecurity http) throws Exception {
         http
@@ -41,7 +45,7 @@ public class CustomEncoderConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(request -> {
                     var corsConfiguration = new CorsConfiguration();
-                    corsConfiguration.setAllowedOrigins(List.of("http://127.0.0.1:3000"));
+                    corsConfiguration.setAllowedOrigins(List.of(frontUrl));
                     corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
                     corsConfiguration.setAllowedHeaders(List.of("*"));
                     corsConfiguration.setAllowCredentials(true);
@@ -52,7 +56,7 @@ public class CustomEncoderConfig {
                         .clearAuthentication(true)  // Очистка аутентификации
                         .invalidateHttpSession(true)  // Инвалидация сессии
                         .deleteCookies("JSESSIONID")
-                        .logoutSuccessUrl("http://127.0.0.1:3000/login")  // Перенаправление после выхода
+                        .logoutSuccessUrl(frontUrl + "/login")  // Перенаправление после выхода
                 )
                 // Настройка доступа
                 .authorizeHttpRequests((requests) -> requests
@@ -63,8 +67,8 @@ public class CustomEncoderConfig {
                 .formLogin((form) -> form
                         .loginPage("/login")
                         .permitAll()
-                        .defaultSuccessUrl("http://127.0.0.1:3000/home")
-                        .failureUrl("http://127.0.0.1:3000/login?error=true")
+                        .defaultSuccessUrl(frontUrl + "/home")
+                        .failureUrl(frontUrl + "/login?error=true")
                 );
 
 

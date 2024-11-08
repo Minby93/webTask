@@ -17,13 +17,16 @@ public class EncryptService {
 
     @Value("${key}")
     String key;
+
+    @Value("${encrypt.url}")
+    String encryptServiceUrl;
     @Autowired
     public EncryptService(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
 
     public String encryptMessage(String message) {
-        String url = "http://localhost:5000/encrypt"; // URL вашего API
+        String url = encryptServiceUrl + "/encrypt"; // URL вашего API
 
         // Создаем объект для отправки в запросе
         EncryptionRequest request = new EncryptionRequest(message, key);
@@ -35,7 +38,7 @@ public class EncryptService {
     }
 
     public String decodeMessage(String message) {
-        String url = "http://localhost:5000/decode"; // URL вашего API
+        String url = encryptServiceUrl + "/decode"; // URL вашего API
 
         // Создаем объект для отправки в запросе
         EncryptionRequest request = new EncryptionRequest(message, key);
