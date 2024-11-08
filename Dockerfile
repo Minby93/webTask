@@ -9,7 +9,7 @@ WORKDIR /app
 RUN mvn clean install -DskipTests
 
 # Новый этап: создаем легковесный образ с OpenJDK для запуска приложения
-FROM openjdk:22-oracle
+FROM eclipse-temurin:21-jdk-alpine
 
 # Копируем JAR файл из предыдущего этапа сборки
 COPY --from=build /app/target/web-0.0.1-SNAPSHOT.jar /app/app.jar
